@@ -565,10 +565,9 @@ class ExactInference(InferenceModule):
         """
         "*** YOUR CODE HERE ***"
         for k in self.beliefs.keys():
-            if (busters.manhattanDistance(k, self.getJailPosition()) == 0
-                    or busters.manhattanDistance(k, gameState.getPacmanPosition()) == 0):
+            if (busters.manhattanDistance(k, gameState.getPacmanPosition()) == 0):
                 self.beliefs[k] = 0.0
-            elif self.beliefs[k] != 0.0:
+            elif (self.beliefs[k] != 0.0):
                 obs = self.getObservationProb(observation, gameState.getPacmanPosition(), k, self.getJailPosition())
                 self.beliefs[k] = obs * self.beliefs[k]
         #raiseNotDefined()
@@ -589,7 +588,14 @@ class ExactInference(InferenceModule):
         current position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
+        newBeliefs = DiscreteDistribution()
+        for p in self.allPositions:
+            newPosDist = self.getPositionDistribution(gameState, p)
+            for newPos in newPosDist.keys():
+                newBeliefs[newPos] += newPosDist[newPos]*self.beliefs[p]
+        newBeliefs.normalize()
+        self.beliefs = newBeliefs
+        #raiseNotDefined()
         "*** END YOUR CODE HERE ***"
 
     def getBeliefDistribution(self):
